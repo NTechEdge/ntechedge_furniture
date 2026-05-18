@@ -8,6 +8,10 @@ interface SectionTitleProps {
   className?: string
 }
 
+/**
+ * Section title component with animated entrance
+ * Used for consistent page section headers
+ */
 export default function SectionTitle({ title, description, white = false, className = "" }: SectionTitleProps) {
   return (
     <motion.div
