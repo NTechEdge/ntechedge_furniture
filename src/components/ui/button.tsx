@@ -6,6 +6,10 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: "sm" | "md" | "lg"
 }
 
+/**
+ * Reusable button component with multiple variants and sizes
+ * Supports consistent styling across the application
+ */
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", children, ...props }, ref) => {
     return (
