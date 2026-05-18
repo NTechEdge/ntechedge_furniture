@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-// import { SectionTitle } from "@/components/ui/section-title"
 import { Button } from '@/components/ui/button';
 import {
   Armchair,
