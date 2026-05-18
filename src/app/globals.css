@@ -26,7 +26,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Header nav — always readable on white background */
+/* Header nav — black text for readability */
 .site-header nav .header-nav-link {
   color: #000000;
 }

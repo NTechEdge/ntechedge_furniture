@@ -594,8 +594,8 @@ export default function Header() {
     <>
       <header
         ref={headerRef}
-        className={`site-header fixed top-0 left-0 right-0 z-50 bg-white transition-[transform,box-shadow,border-color] duration-300 ${
-          isSolidHeader ? "shadow-sm border-b border-gray-100" : "border-b border-transparent"
+        className={`site-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isSolidHeader ? "bg-white shadow-sm border-b border-gray-100" : "bg-transparent border-b border-transparent"
         } ${isHidden ? "-translate-y-full" : "translate-y-0"}`}
       >
         {/* Top bar — home hero only, desktop/tablet */}
@@ -664,22 +664,22 @@ export default function Header() {
               />
             </Link>
 
-            {/* Desktop nav — always black text on white header */}
+            {/* Desktop nav — black text on both transparent and white header */}
             <div className="hidden items-center text-black lg:flex" onMouseLeave={closeMega}>
               {navItems.map((item) => (
                 <div key={item.key} className="relative" onMouseEnter={() => openMega(item.key)}>
                   <button
                     type="button"
-                    className={
+                    className={`header-nav-link flex min-h-10 items-center gap-1 px-2.5 py-2 text-sm font-semibold transition-colors xl:px-3 ${
                       activeMega === item.key
-                        ? "header-nav-link is-active flex min-h-10 items-center gap-1 px-2.5 py-2 text-sm font-semibold transition-colors xl:px-3"
-                        : "header-nav-link flex min-h-10 items-center gap-1 px-2.5 py-2 text-sm font-semibold transition-colors hover:text-[#faba00] xl:px-3"
-                    }
+                        ? "is-active"
+                        : "hover:text-[#faba00]"
+                    }`}
                   >
                     {item.label}
                     <ChevronDown
-                      className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${
-                        activeMega === item.key ? "rotate-180 text-[#faba00]" : "text-black"
+                      className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 text-black ${
+                        activeMega === item.key ? "rotate-180 text-[#faba00]" : ""
                       }`}
                     />
                   </button>
@@ -696,7 +696,7 @@ export default function Header() {
                   className="header-nav-link flex min-h-10 items-center gap-1 px-2.5 py-2 text-sm font-semibold transition-colors hover:text-[#faba00] xl:px-3"
                 >
                   More
-                  <ChevronDown className="h-3.5 w-3.5 shrink-0 text-black transition-transform duration-200 group-hover:rotate-180 group-hover:text-[#faba00]" />
+                  <ChevronDown className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 text-black group-hover:rotate-180 group-hover:text-[#faba00]" />
                 </button>
                 <div className="invisible absolute top-full right-0 z-50 pt-1 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
                   <div className="w-48 rounded-lg border border-gray-100 bg-white text-black py-1.5 shadow-xl">
