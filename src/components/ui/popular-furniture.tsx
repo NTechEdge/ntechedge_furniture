@@ -3,7 +3,7 @@
 import { useRef, useState } from "react"
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, ChevronsRight } from "lucide-react"
 
 const items = [
   { id: 1, title: "Cushion",              image: "/img/Freesia-113.webp" },
@@ -48,51 +48,40 @@ export default function PopularFurniture() {
     trackRef.current.scrollLeft = scrollLeft - walk
   }
 
-  /* ── touch handlers ── */
-  const onTouchStart = (e: React.TouchEvent) => {
-    setStartX(e.touches[0].pageX - (trackRef.current?.offsetLeft ?? 0))
-    setScrollLeft(trackRef.current?.scrollLeft ?? 0)
-  }
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (!trackRef.current) return
-    const x = e.touches[0].pageX - trackRef.current.offsetLeft
-    const walk = (x - startX) * 1.2
-    trackRef.current.scrollLeft = scrollLeft - walk
-  }
-
   return (
-    <section className="py-16 bg-white overflow-hidden">
-      <div className="w-10/12 mx-auto px-4">
+    <section className="py-12 sm:py-16 bg-white overflow-hidden">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
         {/* heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="flex items-center gap-4 mb-10"
+          className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4 mb-6 sm:mb-10"
         >
-          <h2 className="text-2xl font-bold text-[#222222] uppercase tracking-wide">
-            Popular Furniture
-          </h2>
-          <ArrowRight size={24} className="text-[#222222]" />
+          <div className="flex items-center gap-3 sm:gap-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#222222] uppercase tracking-wide">
+              Popular Furniture
+            </h2>
+            <ArrowRight size={22} className="text-[#222222] shrink-0 sm:w-6 sm:h-6 max-md:hidden" aria-hidden />
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-gray-500 sm:text-sm md:hidden">
+            <ChevronsRight className="size-4 text-[#faba00] shrink-0" aria-hidden />
+            <span>Swipe to explore</span>
+          </div>
         </motion.div>
 
-        {/* draggable track */}
         <div
           ref={trackRef}
-          className="flex gap-6 overflow-x-auto pb-4 select-none"
+          className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 scroll-pl-4 scroll-pr-4 sm:scroll-pl-0 sm:scroll-pr-0 pl-1 pr-1 sm:px-0 select-none touch-pan-x snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           style={{
             cursor: "grab",
-            scrollbarWidth: "none",          /* Firefox */
-            msOverflowStyle: "none",         /* IE/Edge */
+            msOverflowStyle: "none",
           }}
           onMouseDown={onMouseDown}
           onMouseLeave={onMouseLeave}
           onMouseUp={onMouseUp}
           onMouseMove={onMouseMove}
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
         >
           {items.map((item, index) => (
             <motion.div
@@ -100,12 +89,10 @@ export default function PopularFurniture() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.07 }}
-              className="shrink-0 flex flex-col items-center group"
-              style={{ width: 160 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+              className="shrink-0 flex flex-col items-center group snap-start w-[min(72vw,11.5rem)] sm:w-[min(42vw,10.5rem)] md:w-[min(30vw,11rem)] lg:w-40"
             >
-              {/* image box */}
-              <div className="relative w-40 h-40 rounded-lg overflow-hidden bg-[#f5f5f5] shadow-sm group-hover:shadow-md transition-shadow duration-300">
+              <div className="relative w-full aspect-square rounded-2xl sm:rounded-lg overflow-hidden bg-[#f5f5f5] shadow-md sm:shadow-sm ring-1 ring-black/[0.04] sm:ring-0 group-active:scale-[0.98] transition-transform duration-200">
                 <Image
                   src={item.image}
                   alt={item.title}
@@ -115,18 +102,12 @@ export default function PopularFurniture() {
                 />
               </div>
 
-              {/* label */}
-              <p className="mt-3 text-sm text-[#444444] text-center font-medium group-hover:text-[#faba00] transition-colors duration-300">
+              <p className="mt-3 text-xs sm:text-sm text-[#444444] text-center font-medium leading-snug max-w-[11rem] sm:max-w-none group-hover:text-[#faba00] transition-colors duration-300 px-1">
                 {item.title}
               </p>
             </motion.div>
           ))}
         </div>
-
-        {/* hide webkit scrollbar via inline style tag */}
-        <style>{`
-          div::-webkit-scrollbar { display: none; }
-        `}</style>
       </div>
     </section>
   )

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 const newArrivals = [
@@ -24,24 +25,29 @@ const newArrivals = [
 
 export default function NewArrivals() {
   return (
-    <section className="py-16 bg-white">
-      <div className=" px-10">
+    <section className="py-12 sm:py-16 bg-[#fafafa] lg:bg-white">
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6">
 
-        {/* ── Header ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
-          className="flex items-center gap-4 mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <ArrowRight size={20} className="text-[#222222] shrink-0" />
-          <span className="text-2xl font-semibold text-[#222222]">New Arrivals</span>
-          <span className="text-2xl text-gray-300">What&apos;s Trending</span>
+          <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <ArrowRight size={20} className="text-[#faba00] shrink-0" aria-hidden />
+              <span className="text-xl sm:text-2xl font-bold text-[#222222]">New Arrivals</span>
+            </div>
+            <span className="text-sm sm:text-lg text-gray-500 pl-7 sm:pl-0">
+              What&apos;s trending this season
+            </span>
+          </div>
         </motion.div>
 
-        {/* ── Three equal-width image cards ── */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+        {/* Mobile / tablet: horizontal cards · lg+: grid */}
+        <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 snap-x snap-mandatory [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-8 lg:overflow-visible lg:pb-0 lg:px-0 [&::-webkit-scrollbar]:hidden">
           {newArrivals.map((item, index) => (
             <motion.div
               key={item.id}
@@ -49,26 +55,31 @@ export default function NewArrivals() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.45, delay: index * 0.1 }}
-              className="flex flex-col group cursor-pointer"
+              className="snap-start shrink-0 w-[min(88vw,22rem)] lg:w-auto lg:snap-none flex flex-col"
             >
-              {/* image — 4:3 landscape ratio matching screenshot */}
-              <div className="relative w-full overflow-hidden bg-[#f5f5f5]" style={{ aspectRatio: "4/3" }}>
-                <Image
-                  src={item.image}
-                  alt={item.label}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
-
-              {/* label */}
-              <p className="mt-3 text-sm text-[#444444] text-center group-hover:text-[#faba00] transition-colors duration-300">
-                {item.label}
-              </p>
+              <Link href="/projects" className="group flex flex-col h-full rounded-2xl bg-white p-3 shadow-md ring-1 ring-black/[0.06] lg:rounded-none lg:bg-transparent lg:p-0 lg:shadow-none lg:ring-0 touch-manipulation">
+                <div className="relative w-full overflow-hidden rounded-xl bg-[#f5f5f5] aspect-[4/3] lg:rounded-sm">
+                  <Image
+                    src={item.image}
+                    alt={item.label}
+                    fill
+                    className="object-cover transition-transform duration-500 group-active:scale-[1.02] lg:group-hover:scale-105"
+                  />
+                </div>
+                <p className="mt-3 text-sm sm:text-base text-[#222] font-medium leading-snug group-hover:text-[#faba00] transition-colors px-1">
+                  {item.label}
+                </p>
+                <span className="mt-2 text-xs font-semibold uppercase tracking-wide text-[#faba00] lg:hidden">
+                  View in catalogue →
+                </span>
+              </Link>
             </motion.div>
           ))}
         </div>
 
+        <p className="mt-2 text-center text-xs text-gray-400 lg:hidden">
+          Swipe for more new pieces
+        </p>
       </div>
     </section>
   )

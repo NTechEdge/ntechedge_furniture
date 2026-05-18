@@ -25,3 +25,30 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* Header nav — always readable on white background */
+.site-header nav .header-nav-link {
+  color: #000000;
+}
+
+.site-header nav .header-nav-link:hover {
+  color: #faba00;
+}
+
+.site-header nav .header-nav-link.is-active {
+  color: #faba00;
+}
+
+@keyframes partners-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@utility animate-partners-marquee {
+  animation: partners-marquee 28s linear infinite;
+  will-change: transform;
+}

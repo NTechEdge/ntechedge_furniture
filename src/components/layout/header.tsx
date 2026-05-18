@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useRef, useEffect, useCallback } from "react"
 import Image from "next/image"
@@ -324,7 +325,7 @@ function MegaPanel({ data, isOpen }: { data: MegaColumn[]; isOpen: boolean }) {
                 {data.map((col, colIndex) => (
                   <div
                     key={colIndex}
-                    className={`flex flex-col gap-6 min-w-45 ${
+                    className={`flex flex-col gap-6 min-w-44 sm:min-w-50 ${
                       colIndex < data.length - 1 ? "border-r border-gray-100 pr-8" : ""
                     }`}
                   >
@@ -332,7 +333,7 @@ function MegaPanel({ data, isOpen }: { data: MegaColumn[]; isOpen: boolean }) {
                       <div key={cat.label}>
                         <Link
                           href={cat.href}
-                          className="block font-semibold text-sm text-gray-900 hover:text-amber-600 transition-colors mb-2"
+                          className="block font-semibold text-sm text-gray-900 hover:text-[#faba00] transition-colors mb-2"
                         >
                           {cat.label}
                         </Link>
@@ -342,7 +343,7 @@ function MegaPanel({ data, isOpen }: { data: MegaColumn[]; isOpen: boolean }) {
                               <li key={item}>
                                 <Link
                                   href={`${cat.href}/${item.toLowerCase().replace(/\s+/g, "-")}`}
-                                  className="text-sm text-gray-600 hover:text-amber-600 transition-colors block"
+                                  className="text-sm text-gray-600 hover:text-[#faba00] transition-colors block"
                                 >
                                   {item}
                                 </Link>
@@ -391,51 +392,72 @@ function MobileNav({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 z-60 lg:hidden"
+            className="fixed inset-0 z-60 bg-black/50 backdrop-blur-[2px] lg:hidden"
+            aria-hidden
           />
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 28, stiffness: 220 }}
-            className="fixed top-0 right-0 bottom-0 w-80 bg-white z-70 lg:hidden flex flex-col"
+            transition={{ type: "spring", damping: 30, stiffness: 280 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Main menu"
+            className="fixed top-0 right-0 bottom-0 z-70 flex w-[min(100%,22rem)] flex-col border-l border-gray-100 bg-white shadow-2xl lg:hidden pr-[max(0px,env(safe-area-inset-right))] pt-[env(safe-area-inset-top)]"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-              <Image src="/img/logo.png" alt="Woodrox" width={120} height={40} className="h-8 w-auto" />
-              <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-md transition-colors">
-                <X className="w-5 h-5 text-gray-600" />
+            {/* Drawer header */}
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-gray-100 px-4 py-3 sm:px-5 sm:py-4">
+              <Link href="/" onClick={onClose} className="min-w-0 shrink">
+                <Image src="/img/logo.png" alt="Woodrox" width={130} height={42} className="h-8 w-auto sm:h-9" />
+              </Link>
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-gray-600 transition-colors hover:bg-gray-100 active:bg-gray-200"
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            {/* Nav Items */}
-            <div className="flex-1 overflow-y-auto py-4">
+            {/* Nav — scrollable */}
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-2">
+              <p className="px-4 pb-2 text-[11px] font-semibold uppercase tracking-wider text-gray-400 sm:px-5">
+                Shop by category
+              </p>
               {navItems.map((item) => (
-                <div key={item.key} className="border-b border-gray-50">
+                <div key={item.key} className="border-b border-gray-100 last:border-b-0">
                   <button
+                    type="button"
                     onClick={() => toggleSection(item.key)}
-                    className="w-full flex items-center justify-between px-5 py-3.5 text-sm font-medium text-gray-800 hover:text-amber-600 transition-colors"
+                    aria-expanded={expandedSections.has(item.key)}
+                    className="flex min-h-12 w-full items-center justify-between gap-2 px-4 py-3.5 text-left text-[15px] font-medium text-gray-900 transition-colors hover:bg-gray-50 active:bg-gray-100 sm:px-5"
                   >
-                    {item.label}
-                    <motion.div animate={{ rotate: expandedSections.has(item.key) ? 90 : 0 }} transition={{ duration: 0.2 }}>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
-                    </motion.div>
+                    <span>{item.label}</span>
+                    <motion.span
+                      animate={{ rotate: expandedSections.has(item.key) ? 90 : 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </motion.span>
                   </button>
-                  <AnimatePresence>
+                  <AnimatePresence initial={false}>
                     {expandedSections.has(item.key) && (
                       <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: "auto" }}
-                        exit={{ height: 0 }}
-                        className="overflow-hidden bg-gray-50"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden bg-[#fafafa]"
                       >
-                        <div className="px-5 py-3 space-y-1">
+                        <div className="space-y-0.5 px-3 py-2 sm:px-4">
                           {item.data.flat().map((cat) => (
                             <Link
                               key={cat.label}
                               href={cat.href}
                               onClick={onClose}
-                              className="block py-2 text-sm text-gray-600 hover:text-amber-600 transition-colors"
+                              className="flex min-h-11 items-center rounded-lg px-3 text-sm text-gray-700 transition-colors hover:bg-white hover:text-[#faba00] active:bg-white"
                             >
                               {cat.label}
                             </Link>
@@ -447,30 +469,50 @@ function MobileNav({
                 </div>
               ))}
 
-              <div className="px-5 pt-4 space-y-1">
-                {moreMenuItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={onClose}
-                    className="block py-2.5 text-sm font-medium text-gray-700 hover:text-amber-600 transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+              <div className="mt-4 border-t border-gray-100 px-4 pt-4 sm:px-5">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                  More
+                </p>
+                <div className="space-y-1">
+                  {moreMenuItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={onClose}
+                      className="flex min-h-11 items-center rounded-lg px-3 text-[15px] font-medium text-gray-800 transition-colors hover:bg-gray-50 hover:text-[#faba00] active:bg-gray-100"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="px-5 py-4 border-t border-gray-100 space-y-2">
-              <a href="tel:+1234567890" className="flex items-center gap-2 text-sm text-gray-600">
-                <Phone className="w-4 h-4 text-amber-600" />
-                +1 (234) 567-890
+            {/* Drawer footer — contact */}
+            <div className="shrink-0 space-y-3 border-t border-gray-100 bg-[#fafafa] px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-5">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Contact</p>
+              <a
+                href="tel:+1234567890"
+                className="flex min-h-11 items-center gap-3 rounded-xl bg-white px-3 py-2 text-sm font-medium text-gray-800 shadow-sm ring-1 ring-gray-100 transition-colors active:bg-gray-50"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#faba00]/15 text-[#faba00]">
+                  <Phone className="h-4 w-4" />
+                </span>
+                <span className="min-w-0">+1 (234) 567-890</span>
               </a>
-              <a href="mailto:info@woodrox.com" className="flex items-center gap-2 text-sm text-gray-600">
-                <Mail className="w-4 h-4 text-amber-600" />
-                info@woodrox.com
+              <a
+                href="mailto:info@woodrox.com"
+                className="flex min-h-11 items-center gap-3 rounded-xl bg-white px-3 py-2 text-sm font-medium text-gray-800 shadow-sm ring-1 ring-gray-100 transition-colors active:bg-gray-50"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#faba00]/15 text-[#faba00]">
+                  <Mail className="h-4 w-4" />
+                </span>
+                <span className="min-w-0 break-all">info@woodrox.com</span>
               </a>
+              <p className="flex items-start gap-2 text-xs leading-relaxed text-gray-500">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#faba00]" />
+                <span>Dhaka, Bangladesh</span>
+              </p>
             </div>
           </motion.div>
         </>
@@ -481,6 +523,8 @@ function MobileNav({
 
 // ── Main Header Component ───────────────────────────────────────────────────────
 export default function Header() {
+  const pathname = usePathname()
+  const isHome = pathname === "/"
   const [activeMega, setActiveMega] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isHidden, setIsHidden] = useState(false)
@@ -492,9 +536,12 @@ export default function Header() {
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY
-      // bg turns white as soon as user starts scrolling
       setIsScrolled(currentY > 1)
-      // hide on scroll down, show on scroll up (after 80px)
+      if (isMobileMenuOpen) {
+        setIsHidden(false)
+        lastScrollY.current = currentY
+        return
+      }
       if (currentY > lastScrollY.current && currentY > 80) {
         setIsHidden(true)
       } else {
@@ -504,7 +551,7 @@ export default function Header() {
     }
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  }, [isMobileMenuOpen])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -516,6 +563,15 @@ export default function Header() {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return
+    const previous = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = previous
+    }
+  }, [isMobileMenuOpen])
 
   const openMega = useCallback((key: string) => {
     if (megaTimeout.current) clearTimeout(megaTimeout.current)
@@ -530,95 +586,125 @@ export default function Header() {
     if (megaTimeout.current) clearTimeout(megaTimeout.current)
   }, [])
 
+  // Solid white header everywhere except home hero at the very top
+  const isSolidHeader = isScrolled || !isHome
+  const showTopBar = isHome && !isScrolled
+
   return (
     <>
       <header
         ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? "bg-white shadow-sm border-b border-gray-100" : "bg-transparent"
+        className={`site-header fixed top-0 left-0 right-0 z-50 bg-white transition-[transform,box-shadow,border-color] duration-300 ${
+          isSolidHeader ? "shadow-sm border-b border-gray-100" : "border-b border-transparent"
         } ${isHidden ? "-translate-y-full" : "translate-y-0"}`}
       >
-        {/* Top bar */}
-        <div className={`text-xs transition-all duration-300 ${isScrolled ? "hidden" : "bg-gray-900 text-gray-300"}`}>
-          <div className="w-10/12 mx-auto px-4 flex justify-between items-center h-9">
-            <div className="flex items-center gap-5">
-              <a href="tel:+1234567890" className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <Phone className="w-3 h-3" />
-                +1 (234) 567-890
+        {/* Top bar — home hero only, desktop/tablet */}
+        <div
+          className={`hidden md:block text-xs transition-all duration-300 ${
+            showTopBar ? "bg-gray-900 text-gray-300" : "hidden"
+          }`}
+        >
+          <div className="mx-auto flex h-9 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <div className="flex min-w-0 flex-1 items-center gap-4 lg:gap-6">
+              <a
+                href="tel:+1234567890"
+                className="flex min-h-9 min-w-0 items-center gap-1.5 hover:text-white transition-colors"
+              >
+                <Phone className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">+1 (234) 567-890</span>
               </a>
-              <a href="mailto:info@woodrox.com" className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <Mail className="w-3 h-3" />
-                info@woodrox.com
+              <a
+                href="mailto:info@woodrox.com"
+                className="hidden min-h-9 items-center gap-1.5 hover:text-white transition-colors sm:flex"
+              >
+                <Mail className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">info@woodrox.com</span>
               </a>
             </div>
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-3 h-3" />
-              <span>Dhaka, Bangladesh</span>
+            <div className="flex max-w-[45%] items-center justify-end gap-1.5 text-right sm:max-w-none">
+              <MapPin className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">Dhaka, Bangladesh</span>
             </div>
           </div>
         </div>
+
+        {/* Mobile: compact contact strip when scrolled (optional quick actions) */}
+        <div
+          className={`md:hidden ${isScrolled ? "flex" : "hidden"} border-b border-gray-100 bg-white/95 backdrop-blur-sm`}
+        >
+          <div className="mx-auto flex max-w-7xl items-stretch justify-center gap-1 px-2 py-1.5 text-[11px] text-[#222222]">
+            <a
+              href="tel:+1234567890"
+              className="flex flex-1 items-center justify-center gap-1 rounded-lg py-2 font-medium text-[#222222] transition-colors hover:bg-[#faba00]/10 hover:text-[#c79200] active:bg-gray-50"
+            >
+              <Phone className="h-3.5 w-3.5 text-[#faba00]" />
+              Call
+            </a>
+            <a
+              href="mailto:info@woodrox.com"
+              className="flex flex-1 items-center justify-center gap-1 rounded-lg py-2 font-medium text-[#222222] transition-colors hover:bg-[#faba00]/10 hover:text-[#c79200] active:bg-gray-50"
+            >
+              <Mail className="h-3.5 w-3.5 text-[#faba00]" />
+              Email
+            </a>
+          </div>
+        </div>
+
         {/* Main nav */}
-        <nav className="w-10/12 mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
+        <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-14 items-center justify-between sm:h-16">
             {/* Logo */}
-            <Link href="/" className="shrink-0">
+            <Link href="/" className="shrink-0 rounded-md outline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#faba00]">
               <Image
                 src="/img/logo.png"
                 alt="Woodrox"
                 width={140}
                 height={44}
-                className="h-9 w-auto"
+                className="h-8 w-auto sm:h-9"
               />
             </Link>
 
-            {/* Desktop nav */}
-            <div
-              className="hidden lg:flex items-center"
-              onMouseLeave={closeMega}
-            >
+            {/* Desktop nav — always black text on white header */}
+            <div className="hidden items-center text-black lg:flex" onMouseLeave={closeMega}>
               {navItems.map((item) => (
-                <div
-                  key={item.key}
-                  className="relative"
-                  onMouseEnter={() => openMega(item.key)}
-                >
+                <div key={item.key} className="relative" onMouseEnter={() => openMega(item.key)}>
                   <button
-                    className={`flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors ${
+                    type="button"
+                    className={
                       activeMega === item.key
-                        ? "text-amber-400"
-                        : isScrolled
-                          ? "text-gray-700 hover:text-amber-600"
-                          : "text-white hover:text-amber-400"
-                    }`}
+                        ? "header-nav-link is-active flex min-h-10 items-center gap-1 px-2.5 py-2 text-sm font-semibold transition-colors xl:px-3"
+                        : "header-nav-link flex min-h-10 items-center gap-1 px-2.5 py-2 text-sm font-semibold transition-colors hover:text-[#faba00] xl:px-3"
+                    }
                   >
                     {item.label}
                     <ChevronDown
-                      className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                        activeMega === item.key ? "rotate-180" : ""
+                      className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${
+                        activeMega === item.key ? "rotate-180 text-[#faba00]" : "text-black"
                       }`}
                     />
                   </button>
 
-                  {/* Active indicator */}
                   {activeMega === item.key && (
-                    <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-amber-500 rounded-full" />
+                    <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-[#faba00]" />
                   )}
                 </div>
               ))}
 
-              {/* More dropdown */}
               <div className="relative group">
-                <button className={`flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors ${isScrolled ? "text-gray-700 hover:text-amber-600" : "text-white hover:text-amber-400"}`}>
+                <button
+                  type="button"
+                  className="header-nav-link flex min-h-10 items-center gap-1 px-2.5 py-2 text-sm font-semibold transition-colors hover:text-[#faba00] xl:px-3"
+                >
                   More
-                  <ChevronDown className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180" />
+                  <ChevronDown className="h-3.5 w-3.5 shrink-0 text-black transition-transform duration-200 group-hover:rotate-180 group-hover:text-[#faba00]" />
                 </button>
-                <div className="absolute top-full right-0 pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
-                  <div className="bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 w-48">
+                <div className="invisible absolute top-full right-0 z-50 pt-1 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
+                  <div className="w-48 rounded-lg border border-gray-100 bg-white text-black py-1.5 shadow-xl">
                     {moreMenuItems.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
-                        className="block px-4 py-2.5 text-sm text-gray-700 hover:text-amber-600 hover:bg-gray-50 transition-colors"
+                        className="block px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50 hover:text-[#faba00]"
                       >
                         {item.label}
                       </Link>
@@ -628,20 +714,22 @@ export default function Header() {
               </div>
             </div>
 
-            {/* Mobile toggle */}
+            {/* Mobile menu */}
             <button
+              type="button"
               onClick={() => setIsMobileMenuOpen(true)}
-              className={`lg:hidden p-2 transition-colors ${isScrolled ? "text-gray-700 hover:text-amber-600" : "text-white hover:text-amber-400"}`}
               aria-label="Open menu"
+              aria-expanded={isMobileMenuOpen}
+              className="flex h-11 w-11 items-center justify-center rounded-full text-black transition-colors hover:bg-gray-100 active:bg-gray-200 lg:hidden"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="h-6 w-6 text-black" strokeWidth={2.25} />
             </button>
           </div>
         </nav>
 
-        {/* Centered mega panel — rendered once, below the full header */}
+        {/* Centered mega panel */}
         <div
-          className="absolute left-1/2 -translate-x-1/2 z-50 w-10/12"
+          className="absolute left-1/2 z-40 w-full max-w-7xl -translate-x-1/2 px-4 sm:px-6 lg:px-8"
           onMouseEnter={() => activeMega && openMega(activeMega)}
           onMouseLeave={closeMega}
         >
