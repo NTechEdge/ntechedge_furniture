@@ -586,17 +586,19 @@ export default function Header() {
     if (megaTimeout.current) clearTimeout(megaTimeout.current)
   }, [])
 
-  // Solid white header everywhere except home hero at the very top
-  const isSolidHeader = isScrolled || !isHome
+  // Header background: transparent on home when not scrolled, white otherwise
+  const headerBackground = isHome && !isScrolled ? "bg-transparent" : "bg-white"
+  const headerShadow = isHome && !isScrolled ? "" : "shadow-sm"
+  const headerBorder = isHome && !isScrolled ? "border-transparent" : "border-gray-100"
   const showTopBar = isHome && !isScrolled
 
   return (
     <>
       <header
         ref={headerRef}
-        className={`site-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isSolidHeader ? "bg-white shadow-sm border-b border-gray-100" : "bg-transparent border-b border-transparent"
-        } ${isHidden ? "-translate-y-full" : "translate-y-0"}`}
+        className={`site-header fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${headerBackground} ${headerShadow} ${headerBorder} ${
+          isHidden ? "-translate-y-full" : "translate-y-0"
+        }`}
       >
         {/* Top bar — home hero only, desktop/tablet */}
         <div
@@ -664,7 +666,7 @@ export default function Header() {
               />
             </Link>
 
-            {/* Desktop nav — black text on both transparent and white header */}
+            {/* Desktop nav — always black text */}
             <div className="hidden items-center text-black lg:flex" onMouseLeave={closeMega}>
               {navItems.map((item) => (
                 <div key={item.key} className="relative" onMouseEnter={() => openMega(item.key)}>
@@ -720,9 +722,9 @@ export default function Header() {
               onClick={() => setIsMobileMenuOpen(true)}
               aria-label="Open menu"
               aria-expanded={isMobileMenuOpen}
-              className="flex h-11 w-11 items-center justify-center rounded-full text-black transition-colors hover:bg-gray-100 active:bg-gray-200 lg:hidden"
+              className="flex h-11 w-11 items-center justify-center rounded-full text-black! transition-colors hover:bg-gray-100 active:bg-gray-200 lg:hidden"
             >
-              <Menu className="h-6 w-6 text-black" strokeWidth={2.25} />
+              <Menu className="h-6 w-6 text-black!" strokeWidth={2.25} />
             </button>
           </div>
         </nav>

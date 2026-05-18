@@ -26,17 +26,17 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Header nav — black text for readability */
+/* Header nav styles */
 .site-header nav .header-nav-link {
-  color: #000000;
+  color: #000000 !important;
 }
 
 .site-header nav .header-nav-link:hover {
-  color: #faba00;
+  color: #faba00 !important;
 }
 
 .site-header nav .header-nav-link.is-active {
-  color: #faba00;
+  color: #faba00 !important;
 }
 
 @keyframes partners-marquee {
