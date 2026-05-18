@@ -15,6 +15,7 @@ const barlow = Barlow({
 export const metadata: Metadata = {
   title: "Woodrox Furniture - Quality Furniture for Modern Living",
   description: "Discover our collection of premium furniture designed for modern living. Stylish, comfortable, and affordable.",
+  keywords: ["furniture", "modern furniture", "home decor", "sofa", "bedroom", "dining"],
 };
 
 export default function RootLayout({
