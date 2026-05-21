@@ -17,8 +17,8 @@ export default function Footer() {
             <p className="text-gray-400 text-xs">
               Copyright © {new Date().getFullYear()} All rights reserved | This template is made with{" "}
               <span className="text-red-500">♥</span> by{" "}
-              <Link href="https://colorlib.com" target="_blank" className="text-[#faba00] hover:underline">
-                Colorlib
+              <Link href="https://ntechedge.com/" target="_blank" className="text-[#faba00] hover:underline">
+                NTechEdge
               </Link>
             </p>
           </div>
